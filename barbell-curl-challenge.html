@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10-Day Barbell Curl Challenge</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d0f;
+    --panel:#12171a;
+    --border:#233036;
+    --gold:#d4af37;
+    --gold-bright:#f4cf5e;
+    --cyan:#3ee6dc;
+    --text:#d7e0e2;
+    --text-dim:#7c8b90;
+    --danger:#e05a5a;
+    --success:#4fd67a;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Space Grotesk',sans-serif;
+    min-height:100%;
+  }
+  body{
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(212,175,55,0.06), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(62,230,220,0.06), transparent 40%);
+    padding-bottom:60px;
+  }
+  .navbar-custom{
+    background:linear-gradient(180deg, var(--panel), rgba(18,23,26,0.6));
+    border-bottom:1px solid var(--border);
+  }
+  .brand-title{
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:2px;
+    color:var(--gold-bright);
+    font-weight:700;
+  }
+  .brand-title span{color:var(--cyan);}
+  .hero{padding:2.2rem 0 1.2rem;}
+  .hero h1{font-weight:700;font-size:2rem;}
+  .hero .lead{
+    color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.95rem;
+  }
+  .stat-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1rem 1.1rem;
+    height:100%;
+  }
+  .stat-card .stat-label{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--text-dim);
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    margin-bottom:.3rem;
+  }
+  .stat-card .stat-value{
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.7rem;
+    font-weight:700;
+    color:var(--gold-bright);
+  }
+  .stat-card.cyan .stat-value{color:var(--cyan);}
+  .progress-wrap{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1rem 1.2rem;
+    margin-top:1rem;
+  }
+  .progress{
+    background:#0f1416;
+    height:10px;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .progress-bar-custom{
+    background:linear-gradient(90deg, var(--gold), var(--cyan));
+  }
+  .day-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+    gap:1rem;
+    margin-top:1.5rem;
+  }
+  .day-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.1rem;
+    position:relative;
+  }
+  .day-card.locked{opacity:0.45;}
+  .day-card.today{
+    border-color:var(--gold);
+    box-shadow:0 0 0 1px rgba(212,175,55,0.25), 0 0 24px rgba(212,175,55,0.08);
+  }
+  .day-card.complete{border-color:var(--success);}
+  .day-card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:.6rem;
+  }
+  .day-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--text-dim);
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+  .day-title{font-weight:600;font-size:1.05rem;margin-top:.15rem;}
+  .badge-status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    padding:.3rem .55rem;
+    border-radius:20px;
+    letter-spacing:.5px;
+    white-space:nowrap;
+  }
+  .badge-locked{background:rgba(124,139,144,0.12);color:var(--text-dim);border:1px solid var(--border);}
+  .badge-today{background:rgba(212,175,55,0.12);color:var(--gold-bright);border:1px solid rgba(212,175,55,0.4);}
+  .badge-done{background:rgba(79,214,122,0.12);color:var(--success);border:1px solid rgba(79,214,122,0.4);}
+  .day-notes{
+    font-size:0.82rem;
+    color:var(--text-dim);
+    margin-bottom:.7rem;
+    min-height:1.2rem;
+  }
+  .sets-table-head{
+    display:grid;
+    grid-template-columns:1.6fr 1fr 1fr auto;
+    gap:.4rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    padding:0 .1rem;
+    margin-bottom:.35rem;
+  }
+  .set-row{
+    display:grid;
+    grid-template-columns:1.6fr 1fr 1fr auto;
+    gap:.4rem;
+    align-items:center;
+    margin-bottom:.4rem;
+  }
+  .set-row .set-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.8rem;
+    color:var(--text-dim);
+  }
+  .set-row input[type="number"]{
+    background:#0f1416;
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:6px;
+    padding:.3rem .4rem;
+    width:100%;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+  }
+  .set-row input[type="number"]:focus{
+    outline:none;
+    border-color:var(--cyan);
+  }
+  .set-remove-btn{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--danger);
+    border-radius:6px;
+    width:28px;
+    height:28px;
+    line-height:1;
+    font-size:0.9rem;
+    padding:0;
+  }
+  .set-remove-btn:hover{
+    background:rgba(224,90,90,0.1);
+    border-color:var(--danger);
+  }
+  .add-set-btn{
+    width:100%;
+    margin-top:.3rem;
+    margin-bottom:.7rem;
+    border:1px dashed var(--border);
+    background:transparent;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    border-radius:6px;
+    padding:.4rem;
+  }
+  .add-set-btn:hover{
+    border-color:var(--cyan);
+    color:var(--cyan);
+  }
+  .day-notes-input{
+    background:#0f1416;
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:6px;
+    padding:.4rem .6rem;
+    width:100%;
+    font-size:0.82rem;
+    resize:vertical;
+    min-height:46px;
+    margin-bottom:.6rem;
+  }
+  .day-notes-input:focus{
+    outline:none;
+    border-color:var(--cyan);
+    background:#0f1416;
+    color:var(--text);
+  }
+  .day-summary{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--text-dim);
+    margin-bottom:.6rem;
+  }
+  .day-summary span{color:var(--gold-bright);}
+  .btn-gold{
+    background:linear-gradient(90deg, var(--gold), var(--gold-bright));
+    border:none;
+    color:#141210;
+    font-weight:600;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    letter-spacing:.5px;
+    width:100%;
+  }
+  .btn-gold:hover{color:#141210;filter:brightness(1.08);}
+  .btn-gold:disabled{opacity:0.4;}
+  .btn-undo{
+    width:100%;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    border-radius:6px;
+    padding:.4rem;
+  }
+  .btn-undo:hover{border-color:var(--cyan);color:var(--cyan);}
+  .btn-outline-cyan{
+    border:1px solid var(--cyan);
+    color:var(--cyan);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    background:transparent;
+  }
+  .btn-outline-cyan:hover{background:rgba(62,230,220,0.1);color:var(--cyan);}
+  .footer-note{
+    text-align:center;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    margin-top:2.5rem;
+  }
+  .modal-content{background:var(--panel);border:1px solid var(--border);color:var(--text);}
+  .modal-header, .modal-footer{border-color:var(--border);}
+  .trophy{font-size:3rem;}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom">
+  <div class="container">
+    <span class="brand-title">CURL<span>·10</span></span>
+    <button class="btn btn-sm btn-reset btn-outline-cyan" id="resetBtn">RESET CHALLENGE</button>
+  </div>
+</nav>
+
+<div class="container hero">
+  <h1>10-Day Barbell Curl Challenge</h1>
+  <p class="lead">Log your own sets, reps and weight each day. Complete a day to unlock the next.</p>
+</div>
+
+<div class="container">
+  <div class="row g-3">
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-label">Days Complete</div>
+        <div class="stat-value" id="statComplete">0 / 10</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card cyan">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value" id="statStreak">0</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-label">Total Reps Logged</div>
+        <div class="stat-value" id="statReps">0</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card cyan">
+        <div class="stat-label">Heaviest Set (kg)</div>
+        <div class="stat-value" id="statWeight">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="d-flex justify-content-between mono" style="font-size:.75rem;color:var(--text-dim);">
+      <span>OVERALL PROGRESS</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress mt-2">
+      <div class="progress-bar progress-bar-custom" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="day-grid" id="dayGrid"></div>
+
+  <div class="footer-note">Progress is saved automatically in this browser · Barbell Curl Challenge · Gold Fundamentals build series</div>
+</div>
+
+<!-- Completion Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-3">
+      <div class="modal-body">
+        <div class="trophy mb-2">🏆</div>
+        <h4 class="mono" style="color:var(--gold-bright);">DAY COMPLETE</h4>
+        <p id="modalMsg" style="color:var(--text-dim);"></p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-gold btn-sm px-4" style="width:auto;" data-bs-dismiss="modal">CONTINUE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Final Challenge Complete Modal -->
+<div class="modal fade" id="finalModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-3">
+      <div class="modal-body">
+        <div class="trophy mb-2">🎉</div>
+        <h4 class="mono" style="color:var(--gold-bright);">CHALLENGE COMPLETE</h4>
+        <p style="color:var(--text-dim);">You finished all 10 days of the Barbell Curl Challenge. Solid work.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-gold btn-sm px-4" style="width:auto;" data-bs-dismiss="modal">NICE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  const STORAGE_KEY = 'curl10_challenge_state_v2';
+
+  // Just day titles/focus text now — no fixed sets/reps prescription.
+  const PROGRAM = [
+    {day:1,  title:"Foundation",        notes:"Establish your baseline. Log whatever sets/reps/weight feel right today."},
+    {day:2,  title:"Volume Intro",      notes:"Try to add a bit more total volume than Day 1."},
+    {day:3,  title:"Tempo Work",        notes:"Slow the eccentric (lowering) to 3 seconds per rep."},
+    {day:4,  title:"Active Recovery",   notes:"Lighter weight, higher reps. Let the joints recover."},
+    {day:5,  title:"Overload",          notes:"Push the weight up a little from earlier in the week."},
+    {day:6,  title:"Burnout Set",       notes:"Push your final set close to failure with good form."},
+    {day:7,  title:"Rest & Mobility",   notes:"Light weight only. Stretch biceps and forearms after."},
+    {day:8,  title:"Peak Volume",       notes:"Aim for your highest total rep count of the challenge."},
+    {day:9,  title:"Strength Test",     notes:"Go heavier, lower reps. Test your progress vs Day 1."},
+    {day:10, title:"Max Effort Finish", notes:"Final day — try to match or beat your best day."}
+  ];
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return {days:{}};
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function defaultDayState(){
+    return {
+      completed:false,
+      notes:'',
+      sets:[{reps:'', weight:''}] // start with one empty set row
+    };
+  }
+
+  let state = loadState();
+
+  function getDayState(dayNum){
+    if(!state.days[dayNum]){
+      state.days[dayNum] = defaultDayState();
+    }
+    return state.days[dayNum];
+  }
+
+  function isDayUnlocked(dayNum){
+    if(dayNum === 1) return true;
+    const prev = state.days[dayNum-1];
+    return prev && prev.completed;
+  }
+
+  function computeStreak(){
+    let streak = 0;
+    for(let i=1;i<=10;i++){
+      const d = state.days[i];
+      if(d && d.completed) streak++;
+      else break;
+    }
+    return streak;
+  }
+
+  function computeStats(){
+    let completeCount = 0, totalReps = 0, maxWeight = 0;
+    PROGRAM.forEach(p=>{
+      const d = state.days[p.day];
+      if(d){
+        if(d.completed) completeCount++;
+        d.sets.forEach(s=>{
+          const r = parseFloat(s.reps);
+          const w = parseFloat(s.weight);
+          if(!isNaN(r)) totalReps += r;
+          if(!isNaN(w) && w > maxWeight) maxWeight = w;
+        });
+      }
+    });
+    return {completeCount, totalReps, maxWeight};
+  }
+
+  function daySetSummary(d){
+    let reps = 0, sets = d.sets.length;
+    d.sets.forEach(s=>{
+      const r = parseFloat(s.reps);
+      if(!isNaN(r)) reps += r;
+    });
+    return {sets, reps};
+  }
+
+  function renderStats(){
+    const stats = computeStats();
+    const streak = computeStreak();
+    document.getElementById('statComplete').textContent = stats.completeCount + ' / 10';
+    document.getElementById('statStreak').textContent = streak;
+    document.getElementById('statReps').textContent = stats.totalReps;
+    document.getElementById('statWeight').textContent = stats.maxWeight;
+    const pct = Math.round((stats.completeCount/10)*100);
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function showCompleteModal(dayNum){
+    document.getElementById('modalMsg').textContent = 'Day ' + dayNum + ' logged. Day ' + (dayNum+1<=10?dayNum+1:'—') + ' is now unlocked.';
+    const modal = new bootstrap.Modal(document.getElementById('completeModal'));
+    if(dayNum < 10) modal.show();
+  }
+
+  function render(){
+    const grid = document.getElementById('dayGrid');
+    grid.innerHTML = '';
+    const streak = computeStreak();
+    const currentDay = Math.min(streak+1, 10);
+
+    PROGRAM.forEach(p=>{
+      const unlocked = isDayUnlocked(p.day);
+      const d = getDayState(p.day);
+      const isToday = unlocked && !d.completed && p.day === currentDay;
+      const summary = daySetSummary(d);
+
+      const card = document.createElement('div');
+      card.className = 'day-card' + (!unlocked ? ' locked' : '') + (isToday ? ' today' : '') + (d.completed ? ' complete' : '');
+
+      let statusBadge = '';
+      if(!unlocked){
+        statusBadge = '<span class="badge-status badge-locked">🔒 LOCKED</span>';
+      } else if(d.completed){
+        statusBadge = '<span class="badge-status badge-done">✓ DONE</span>';
+      } else {
+        statusBadge = '<span class="badge-status badge-today">● TODAY</span>';
+      }
+
+      const setsHtml = d.sets.map((s,i)=>{
+        const removeDisabled = d.sets.length <= 1 ? 'disabled' : '';
+        return `<div class="set-row">
+          <span class="set-label">Set ${i+1}</span>
+          <input type="number" min="0" class="reps-input" placeholder="reps" data-day="${p.day}" data-idx="${i}" value="${s.reps}" ${unlocked?'':'disabled'}>
+          <input type="number" min="0" step="0.5" class="weight-input" placeholder="kg" data-day="${p.day}" data-idx="${i}" value="${s.weight}" ${unlocked?'':'disabled'}>
+          <button class="set-remove-btn" data-day="${p.day}" data-idx="${i}" ${unlocked?'':'disabled'} ${removeDisabled} title="Remove set">✕</button>
+        </div>`;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="day-card-header">
+          <div>
+            <div class="day-num">DAY ${String(p.day).padStart(2,'0')}</div>
+            <div class="day-title">${p.title}</div>
+          </div>
+          ${statusBadge}
+        </div>
+        <div class="day-notes">${p.notes}</div>
+        <div class="day-summary">${summary.sets} set${summary.sets!==1?'s':''} logged · <span>${summary.reps}</span> total reps</div>
+        <div class="sets-table-head">
+          <span>Set</span><span>Reps</span><span>Weight</span><span></span>
+        </div>
+        ${setsHtml}
+        <button class="add-set-btn" data-day="${p.day}" ${unlocked?'':'disabled'}>+ Add Set</button>
+        <textarea class="day-notes-input" placeholder="Notes for this day..." data-day="${p.day}" ${unlocked?'':'disabled'}>${d.notes}</textarea>
+        ${d.completed
+          ? `<button class="btn-undo" data-day="${p.day}">Undo Complete</button>`
+          : `<button class="btn-gold" data-day="${p.day}" ${unlocked?'':'disabled'}>Mark Day Complete</button>`
+        }
+      `;
+      grid.appendChild(card);
+    });
+
+    attachListeners();
+    renderStats();
+  }
+
+  function attachListeners(){
+    document.querySelectorAll('.reps-input').forEach(inp=>{
+      inp.addEventListener('input', (e)=>{
+        const day = parseInt(e.target.dataset.day);
+        const idx = parseInt(e.target.dataset.idx);
+        getDayState(day).sets[idx].reps = e.target.value;
+        saveState();
+        renderStats();
+        updateSummaryOnly(day);
+      });
+    });
+
+    document.querySelectorAll('.weight-input').forEach(inp=>{
+      inp.addEventListener('input', (e)=>{
+        const day = parseInt(e.target.dataset.day);
+        const idx = parseInt(e.target.dataset.idx);
+        getDayState(day).sets[idx].weight = e.target.value;
+        saveState();
+        renderStats();
+      });
+    });
+
+    document.querySelectorAll('.set-remove-btn').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        const day = parseInt(e.currentTarget.dataset.day);
+        const idx = parseInt(e.currentTarget.dataset.idx);
+        const d = getDayState(day);
+        if(d.sets.length > 1){
+          d.sets.splice(idx,1);
+          saveState();
+          render();
+        }
+      });
+    });
+
+    document.querySelectorAll('.add-set-btn').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        const day = parseInt(e.currentTarget.dataset.day);
+        const d = getDayState(day);
+        d.sets.push({reps:'', weight:''});
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('.day-notes-input').forEach(ta=>{
+      ta.addEventListener('input', (e)=>{
+        const day = parseInt(e.target.dataset.day);
+        getDayState(day).notes = e.target.value;
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('.btn-gold').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        const day = parseInt(e.currentTarget.dataset.day);
+        const d = getDayState(day);
+        d.completed = true;
+        saveState();
+        showCompleteModal(day);
+        render();
+        if(day === 10){
+          setTimeout(()=>{
+            const finalModal = new bootstrap.Modal(document.getElementById('finalModal'));
+            finalModal.show();
+          }, 600);
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-undo').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        const day = parseInt(e.currentTarget.dataset.day);
+        const d = getDayState(day);
+        d.completed = false;
+        saveState();
+        render();
+      });
+    });
+  }
+
+  function updateSummaryOnly(day){
+    // lightweight update without full re-render, keeps input focus intact
+    const d = getDayState(day);
+    const summary = daySetSummary(d);
+    const card = document.querySelector(`.reps-input[data-day="${day}"]`)?.closest('.day-card');
+    if(card){
+      const el = card.querySelector('.day-summary');
+      if(el) el.innerHTML = `${summary.sets} set${summary.sets!==1?'s':''} logged · <span>${summary.reps}</span> total reps`;
+    }
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('Reset all progress for the 10-Day Barbell Curl Challenge? This cannot be undone.')){
+      state = {days:{}};
+      saveState();
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
